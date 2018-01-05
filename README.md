@@ -1,0 +1,3 @@
+# WCHDLL
+MyClass
+ffffffff
