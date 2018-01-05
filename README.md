@@ -1,3 +1,3 @@
 # WCHDLL
 MyClass
-ffffffff
+'ffffffff'
