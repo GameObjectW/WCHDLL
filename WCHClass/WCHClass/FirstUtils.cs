@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -71,6 +72,72 @@ namespace Math
                 }
             }
             return value;
+        }
+
+        /// <summary>
+        /// 清理内存(一般在切换场景的时候调用)
+        /// </summary>
+        public static void ClearMemory()
+        {
+            Resources.UnloadUnusedAssets();
+            GC.Collect();
+        }
+
+        /// <summary>
+        /// 查找子对象
+        /// </summary>
+        /// <param name="goParent">父对象</param>
+        /// <param name="childName">子对象名称</param>
+        /// <returns></returns>
+        public static Transform FindTheChild(GameObject goParent, string childName)
+        {
+            Transform searchTrans = goParent.transform.Find(childName);
+            if (searchTrans == null)
+            {
+                foreach (Transform trans in goParent.transform)
+                {
+                    searchTrans = FindTheChild(trans.gameObject, childName);
+                    if (searchTrans != null)
+                    {
+                        return searchTrans;
+                    }
+                }
+            }
+            return searchTrans;
+        }
+
+        /// <summary>
+        /// 获取子物体的脚本
+        /// </summary>
+        /// <typeparam name="T">泛型</typeparam>
+        /// <param name="goParent">父对象</param>
+        /// <param name="childName">子对象名称</param>
+        /// <returns></returns>
+        public static T GetTheChildComponent<T>(GameObject goParent, string childName) where T : Component
+        {
+            Transform searchTrans = FindTheChild(goParent, childName);
+            if (searchTrans != null)
+            {
+                return searchTrans.gameObject.GetComponent<T>();
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// 给子物体添加父对象
+        /// </summary>
+        /// <param name="parentTrs">父对象的方位</param>
+        /// <param name="childTrs">子对象的方位</param>
+        public static void AddChildToParent(Transform parentTrs, Transform childTrs)
+        {
+            //childTrs.parent = parentTrs; //Original Method
+            childTrs.SetParent(parentTrs, false);
+            childTrs.localPosition = Vector3.zero;
+            childTrs.localScale = Vector3.one;
+            childTrs.localEulerAngles = Vector3.zero;
         }
     }
 }
